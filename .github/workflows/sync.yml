@@ -3,17 +3,19 @@ name: Auto Sync Podcast Feed
 on:
   schedule:
     - cron: '0 */6 * * *'  # Runs automatically every 6 hours
-  workflow_dispatch:        # Allows manual sync button trigger
+  workflow_dispatch:        # Manual trigger button
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Grants explicit write access to push sermons.json
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -23,7 +25,7 @@ jobs:
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.value "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add sermons.json
           git commit -m "Auto-update sermons.json" || exit 0
           git push
