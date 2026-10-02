@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # Grants write access to push updated sermons.json
+      contents: write       # Grants explicit write access to push sermons.json
 
     steps:
       - name: Checkout Repo
