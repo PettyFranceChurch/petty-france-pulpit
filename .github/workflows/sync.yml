@@ -9,23 +9,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # Grants explicit write access to push sermons.json
+      contents: write       # Grants write access to push updated sermons.json
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0    # Pulls full history to prevent merge conflicts
+          fetch-depth: 0    # Fetches git history to enable clean rebase
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Parse RSS Feed
         run: python update_sermons.py
@@ -37,10 +32,9 @@ jobs:
           git pull origin main --rebase || true
           git add sermons.json
           
-          # Only commit and push if sermons.json actually changed
           if ! git diff --cached --quiet; then
             git commit -m "Auto-update sermons.json [skip ci]"
             git push
           else
-            echo "No changes detected in sermons.json. Skipping commit."
+            echo "No changes in sermons.json. Skipping commit."
           fi
